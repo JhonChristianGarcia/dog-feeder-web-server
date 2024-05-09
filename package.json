@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +13,7 @@
     "@firebase/app": "^0.10.2",
     "express": "^4.19.2",
     "firebase": "^10.11.1",
+    "node-cron": "^3.0.3",
     "node-schedule": "^2.1.1"
   }
 }
