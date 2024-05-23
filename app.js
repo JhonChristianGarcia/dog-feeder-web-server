@@ -88,9 +88,10 @@ getDocs(devicesRef)
 
                         const localDate = moment.tz({ hour: parseInt(hour), minute: parseInt(minute), second: parseInt(second) }, 'Asia/Manila');  // Convert to PHT
                         const serverDate = localDate.clone().tz('Europe/London');  // Convert PHT to GMT/BST
-                        
-                        console.log(`Day: ${new Date().getDay()}, Hour: ${new Date().getHours()}, Minute: ${new Date().getMinutes()}`)
-
+                        // console.log(`${serverDate} vs ${localDate}`)
+                        // console.log(`Day: ${new Date().getDay()}, Hour: ${new Date().getHours()}, Minute: ${new Date().getMinutes()}`)
+              
+                        console.log("Day:", new Date().getDay(),"/", "Hour", new Date().getHours(), "/", "Mins", new Date().getMinutes())
                         const days = sched.repeat.map((day) => {
                             switch (day) {
                                 case "Mon":
@@ -113,6 +114,7 @@ getDocs(devicesRef)
                         });
 
                         const cronExpression = `0 ${serverDate.minute()} ${serverDate.hour()} * * ${days.join(',')}`;
+                        // console.log(cronExpression)
                         cron.schedule(cronExpression, () => console.log("You're supposed to do something at this point!!"));
                         tasks[sched.id] = cron.schedule(cronExpression, () => {
                             console.log(`Motor updated`);
