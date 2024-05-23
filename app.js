@@ -28,11 +28,10 @@ getDocs(devicesRef)
             onSnapshot(currentDevice, docSnapshot => {
                 if (docSnapshot.exists()) {
                     const feedTimes = docSnapshot.data().feedTimes;
-                    const serverTimeOffset = -8; // Server is 8 hours behind local time
 
                     feedTimes?.forEach(time => {
-                        const localDate = moment(time);
-                        const serverDate = localDate.clone().add(serverTimeOffset, 'hours');
+                        const localDate = moment.tz(time, 'Asia/Manila');  // Convert feed time to PHT
+                        const serverDate = localDate.clone().tz('Europe/London');  // Convert PHT to GMT/BST
                         schedule.scheduleJob(serverDate.toDate(), () => {
                             updateDoc(currentDevice, {
                                 motorOn: true
@@ -87,8 +86,8 @@ getDocs(devicesRef)
                             hour = '00';
                         }
 
-                        const localDate = moment().set({ hour: parseInt(hour), minute: parseInt(minute), second: parseInt(second) });
-                        const serverDate = localDate.clone().add(-8, 'hours');
+                        const localDate = moment.tz({ hour: parseInt(hour), minute: parseInt(minute), second: parseInt(second) }, 'Asia/Manila');  // Convert to PHT
+                        const serverDate = localDate.clone().tz('Europe/London');  // Convert PHT to GMT/BST
                         
                         console.log(`Day: ${new Date().getDay()}, Hour: ${new Date().getHours()}, Minute: ${new Date().getMinutes()}`)
 
@@ -168,36 +167,6 @@ app.get("/data", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
-
-
-// const WebSocket = require('ws');
-
-// const WS_PORT = 8898;
-// const HTTP_PORT = 8099;
-
-// const wsServer = new WebSocket.Server({ port: WS_PORT }, () => console.log(`WS Server is listening at ${WS_PORT}`));
-
-// let connectedClients = [];
-// wsServer.on('connection', (ws, req) => {
-//     console.log('Connected');
-//     connectedClients.push(ws);
-
-//     ws.on('message', data => {
-//         const base64Data = Buffer.from(data).toString('base64'); // Convert binary data to base64
-//         connectedClients.forEach((ws, i) => {
-//             if (ws.readyState === ws.OPEN) {
-//                 ws.send(base64Data);
-//             } else {
-//                 connectedClients.splice(i, 1);
-//             }
-//         });
-//     });
-// });
-
-// app.get('/client', (req, res) => res.sendFile(path.resolve(__dirname, './client.html')));
-// app.listen(HTTP_PORT, () => console.log(HTTP server listening at ${HTTP_PORT}));
 
 app.listen(3000, () => {
   console.log("App listening on port 3000...");
