@@ -90,6 +90,8 @@ getDocs(devicesRef)
                         const localDate = moment().set({ hour: parseInt(hour), minute: parseInt(minute), second: parseInt(second) });
                         const serverDate = localDate.clone().add(-8, 'hours');
                         
+                        console.log(`Day: ${new Date().getDay()}, Hour: ${new Date().getHours()}, Minute: ${new Date().getMinutes()}`)
+
                         const days = sched.repeat.map((day) => {
                             switch (day) {
                                 case "Mon":
@@ -137,10 +139,14 @@ app.get("/", (req, res) => {
   </head>
   <style>
   body {margin: 0;
+    width: 100%;
+    height: 50%;
     padding:0;
     display: flex;
     justify-content: center;
-    align-items: center;}
+    align-items: center;
+    flex-direction: column;
+  }
   </style>
   
   <body>
@@ -163,6 +169,36 @@ app.get("/data", async (req, res) => {
     }
 });
 
+
+
+
+// const WebSocket = require('ws');
+
+// const WS_PORT = 8898;
+// const HTTP_PORT = 8099;
+
+// const wsServer = new WebSocket.Server({ port: WS_PORT }, () => console.log(`WS Server is listening at ${WS_PORT}`));
+
+// let connectedClients = [];
+// wsServer.on('connection', (ws, req) => {
+//     console.log('Connected');
+//     connectedClients.push(ws);
+
+//     ws.on('message', data => {
+//         const base64Data = Buffer.from(data).toString('base64'); // Convert binary data to base64
+//         connectedClients.forEach((ws, i) => {
+//             if (ws.readyState === ws.OPEN) {
+//                 ws.send(base64Data);
+//             } else {
+//                 connectedClients.splice(i, 1);
+//             }
+//         });
+//     });
+// });
+
+// app.get('/client', (req, res) => res.sendFile(path.resolve(__dirname, './client.html')));
+// app.listen(HTTP_PORT, () => console.log(HTTP server listening at ${HTTP_PORT}));
+
 app.listen(3000, () => {
-    console.log("App listening on port 3000...");
+  console.log("App listening on port 3000...");
 });
