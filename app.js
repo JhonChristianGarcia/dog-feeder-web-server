@@ -131,6 +131,7 @@ getDocs(devicesRef)
             });
 
             const cronExpression = `0 ${minute} ${hour} * * ${days.join(',')}`;
+            cron.schedule(cronExpression, ()=> console.log("You're supposed to do something at this point!!"))
             tasks[sched.id] = cron.schedule(cronExpression, () => {
               console.log(`Motor updated`);
               updatingDoc(currentDevice, sched.portion * 1000);
