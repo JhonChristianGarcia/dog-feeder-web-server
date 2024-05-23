@@ -96,7 +96,6 @@ getDocs(devicesRef)
             }
 
             // console.log("Its true here");
-            console.log("Day:",new Date().getDay(), "/ Hours: ", new Date().getHours() - 12, "/ Minutes: ", new Date().getMinutes() );
 
             // Schedule a new task for this schedule
             let [hour, minute, second] = sched.time.split(":");
@@ -108,6 +107,7 @@ getDocs(devicesRef)
             } else if (period === 'AM' && hour === '12') {
               hour = '00';
             }
+            console.log(`${hour} hour set on unit vs hour now ${new Date().getHours()}`)
 
             const days = sched.repeat.map((day) => {
               switch (day) {
@@ -131,7 +131,7 @@ getDocs(devicesRef)
             });
 
             const cronExpression = `0 ${minute} ${hour} * * ${days.join(',')}`;
-            cron.schedule(cronExpression, ()=> console.log("You're supposed to do something at this point!!"))
+            cron.schedule(cronExpression, ()=> console.log("You're supposed to do something at this point!!"));
             tasks[sched.id] = cron.schedule(cronExpression, () => {
               console.log(`Motor updated`);
               updatingDoc(currentDevice, sched.portion * 1000);
