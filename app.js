@@ -2,9 +2,8 @@ const express = require('express');
 const app = express();
 const { db } = require('./config');  // Import Firestore
 const { collection, getDocs, onSnapshot, doc, updateDoc } = require('firebase/firestore');
-const cron = require('node-cron');
+const { CronJob } = require('cron');
 const moment = require('moment-timezone');
-const schedule = require('node-schedule');
 app.use(express.json());
 
 const devicesRef = collection(db, "device-feeder");
@@ -30,9 +29,10 @@ getDocs(devicesRef)
                     const feedTimes = docSnapshot.data().feedTimes;
 
                     feedTimes?.forEach(time => {
-                        const localDate = moment.tz(time, 'Asia/Manila');  // Convert feed time to PHT
-                        const serverDate = localDate.clone().tz('Europe/London');  // Convert PHT to GMT/BST
-                        schedule.scheduleJob(serverDate.toDate(), () => {
+                        const localDate = moment.tz(time, 'Asia/Manila');  // Interpret time as PHT
+                        const cronTime = `${localDate.seconds()} ${localDate.minutes()} ${localDate.hours()} ${localDate.date()} ${localDate.month() + 1} *`;
+
+                        const job = new CronJob(cronTime, () => {
                             updateDoc(currentDevice, {
                                 motorOn: true
                             }).then(() => {
@@ -43,7 +43,9 @@ getDocs(devicesRef)
                                     });
                                 }, 3000);
                             });
-                        });
+                        }, null, true, 'Asia/Manila');
+                        
+                        job.start();
                     });
                 } else {
                     console.log(`No such document...`);
@@ -86,40 +88,27 @@ getDocs(devicesRef)
                             hour = '00';
                         }
 
-                        const localDate = moment.tz({ hour: parseInt(hour), minute: parseInt(minute), second: parseInt(second) }, 'Asia/Manila');  // Convert to PHT
-                        const serverDate = localDate.clone().tz('Europe/London');  // Convert PHT to GMT/BST
-                        // console.log(`${serverDate} vs ${localDate}`)
-                        // console.log(`Day: ${new Date().getDay()}, Hour: ${new Date().getHours()}, Minute: ${new Date().getMinutes()}`)
-              
-                        console.log("Day:", new Date().getDay(),"/", "Hour", new Date().getHours(), "/", "Mins", new Date().getMinutes())
-                        const days = sched.repeat.map((day) => {
+                        const localDate = moment.tz({ hour: parseInt(hour), minute: parseInt(minute), second: parseInt(second) }, 'Asia/Manila');  // Interpret time as PHT
+                        const cronTime = `${localDate.seconds()} ${localDate.minutes()} ${localDate.hours()} * * ${sched.repeat.map(day => {
                             switch (day) {
-                                case "Mon":
-                                    return 1;
-                                case "Tue":
-                                    return 2;
-                                case "Wed":
-                                    return 3;
-                                case "Thu":
-                                    return 4;
-                                case "Fri":
-                                    return 5;
-                                case "Sat":
-                                    return 6;
-                                case "Sun":
-                                    return 0;
-                                default:
-                                    return "*";
+                                case "Mon": return 1;
+                                case "Tue": return 2;
+                                case "Wed": return 3;
+                                case "Thu": return 4;
+                                case "Fri": return 5;
+                                case "Sat": return 6;
+                                case "Sun": return 0;
+                                default: return '*';
                             }
-                        });
+                        }).join(',')}`;
 
-                        const cronExpression = `0 ${serverDate.minute()} ${serverDate.hour()} * * ${days.join(',')}`;
-                        // console.log(cronExpression)
-                        cron.schedule(cronExpression, () => console.log("You're supposed to do something at this point!!"));
-                        tasks[sched.id] = cron.schedule(cronExpression, () => {
-                            console.log(`Motor updated`);
+                        const job = new CronJob(cronTime, () => {
+                            console.log("You're supposed to do something at this point!!");
                             updatingDoc(currentDevice, sched.portion * 1000);
-                        });
+                        }, null, true, 'Asia/Manila');
+
+                        job.start();
+                        tasks[sched.id] = job;
                     });
                 }
             });
