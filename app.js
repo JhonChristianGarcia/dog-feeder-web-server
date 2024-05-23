@@ -135,6 +135,14 @@ app.get("/", (req, res) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>My Node.js App</title>
   </head>
+  <style>
+  body {margin: 0;
+    padding:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;}
+  </style>
+  
   <body>
       <h1>Welcome to My Node.js App</h1>
       <p>This is a simple HTML response sent from a Node.js server using Express.</p>
