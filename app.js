@@ -127,10 +127,20 @@ getDocs(devicesRef)
     });
 
 app.get("/", (req, res) => {
-    res.status(200).json({
-        status: "success",
-        message: "You've reached my server"
-    });
+  res.send(`
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>My Node.js App</title>
+  </head>
+  <body>
+      <h1>Welcome to My Node.js App</h1>
+      <p>This is a simple HTML response sent from a Node.js server using Express.</p>
+  </body>
+  </html>
+`);
 });
 
 app.get("/data", async (req, res) => {
