@@ -96,7 +96,7 @@ getDocs(devicesRef)
             }
 
             // console.log("Its true here");
-            console.log(sched);
+            console.log("Day:",new Date().getDay(), "/ Hours: ", new Date().getHours() - 12, "/ Minutes: ", new Date().getMinutes() );
 
             // Schedule a new task for this schedule
             let [hour, minute, second] = sched.time.split(":");
