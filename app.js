@@ -19,13 +19,14 @@ function updatingDoc(currentDevice, portion = 3000){
                 motorOn: true,
             })
            },3000)  
-        }).then(()=>{
-            setTimeout(()=>{
-                updateDoc(currentDevice, {
-                    motorOn: false,
-                })
-               },3000) 
         })
+        // .then(()=>{
+        //     setTimeout(()=>{
+        //         updateDoc(currentDevice, {
+        //             motorOn: false,
+        //         })
+        //        },3000) 
+        // })
    
 }
 getDocs(devicesRef)
@@ -62,10 +63,10 @@ getDocs(devicesRef)
         console.error("Error fetching documents: ", error);
     });
 
-    const task = () => {
-        console.log("Cron ran")
-    }
-    cron.schedule('17 21 * * *', task);
+    // const task = () => {
+    //     console.log("Cron ran")
+    // }
+    // cron.schedule('17 21 * * *', task);
 
 
 
@@ -89,12 +90,12 @@ getDocs(devicesRef)
 
             // If the schedule is off, don't schedule a new task
             if (!sched.isOn) {
-              console.log("Its false here");
+              // console.log("Its false here");
               console.log(sched);
               return;
             }
 
-            console.log("Its true here");
+            // console.log("Its true here");
             console.log(sched);
 
             // Schedule a new task for this schedule
