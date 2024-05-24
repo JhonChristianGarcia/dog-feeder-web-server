@@ -4,6 +4,7 @@ const { db } = require('./config');  // Import Firestore
 const { collection, getDocs, onSnapshot, doc, updateDoc } = require('firebase/firestore');
 const { CronJob } = require('cron');
 const moment = require('moment-timezone');
+const path = require('path')
 app.use(express.json());
 
 const devicesRef = collection(db, "device-feeder");
@@ -103,7 +104,6 @@ getDocs(devicesRef)
                         }).join(',')}`;
 
                         const job = new CronJob(cronTime, () => {
-                            console.log("You're supposed to do something at this point!!");
                             updatingDoc(currentDevice, sched.portion * 1000);
                         }, null, true, 'Asia/Manila');
 
@@ -118,34 +118,13 @@ getDocs(devicesRef)
         console.error("Error fetching documents: ", error);
     });
 
-app.get("/", (req, res) => {
-  res.send(`
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>My Node.js App</title>
-  </head>
-  <style>
-  body {margin: 0;
-    width: 100%;
-    height: 50%;
-    padding:0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
-  </style>
-  
-  <body>
-      <h1>Welcome to My Node.js App</h1>
-      <p>This is a simple HTML response sent from a Node.js server using Express.</p>
-  </body>
-  </html>
-`);
-});
+   
+
+    app.use(express.static(path.join(__dirname, 'public')));
+
+    app.get("/", (req, res) => {
+      res.sendFile(path.join(__dirname, 'index.html'));
+    });
 
 app.get("/data", async (req, res) => {
     try {
